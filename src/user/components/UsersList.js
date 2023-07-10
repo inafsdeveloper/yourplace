@@ -11,8 +11,6 @@ const UsersList = props => {
             </div>
         );
     }
-
-    console.log(props);
     return (
         <u2>
             {props.items.map(user => (
