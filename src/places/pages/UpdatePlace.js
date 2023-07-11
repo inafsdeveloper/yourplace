@@ -10,7 +10,7 @@ const DUMMY_PLACES = require('../../shared/data/places.json');
 const UpdatePlace = props => {
     const placeId = useParams().placeId;
 
-    const identifiedPlace = DUMMY_PLACES.filter(place => place.id === placeId);
+    const identifiedPlace = DUMMY_PLACES.find(place => place.id === placeId);
 
     if (!identifiedPlace) {
         return (
@@ -19,8 +19,7 @@ const UpdatePlace = props => {
             </div>
         );
     }
-
-    console.log(identifiedPlace);
+    
     return (
         <form>
             <Input
