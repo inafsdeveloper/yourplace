@@ -13,6 +13,7 @@ import { AuthContext } from "../../shared/context/auth-context";
 import config from "../../shared/config/config.json";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+import { useHttpClient } from "../../shared/hooks/http-hook";
 
 import './Auth.css';
 
@@ -25,9 +26,7 @@ const Auth = props => {
 
     const [isLoginMode, setIsLoginMode] = useState(true);
 
-    const [isLoading, setIsLoading] = useState(false);
-
-    const [error, setError] = useState();
+    const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
     const [formState, inputHandler, setFormData] = useForm({
         email: {
@@ -42,66 +41,40 @@ const Auth = props => {
 
     const authSubmitHandler = async event => {
         event.preventDefault();
-        // console.log("Authenticating");
-        // console.log(formState.inputs);
+        
         const signupUrl = backendServerUrl + userRoute.baseUrl + userRoute.signup.path;
         const loginUrl = backendServerUrl + userRoute.baseUrl + userRoute.login.path;
 
-        let response;
-        let responseData;
         try {
-            setIsLoading(true);
-
-
             if (isLoginMode) {
-                console.log('Logging in...');
-                response = await fetch(loginUrl, {
-                    method: userRoute.login.method,
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
+                await sendRequest(loginUrl,
+                    userRoute.login.method,
+                    JSON.stringify({
                         email: formState.inputs.email.value,
                         password: formState.inputs.password.value
-                    })
-                });
-                console.log(response.status);
-                responseData = await response.json();
-                if (!response.ok) {
-                    throw new Error(responseData.message);
-                }
-
-                console.log(responseData);
-                setIsLoading(false);
-                auth.login();
-            } else {
-                console.log('Siging Up...');
-                response = await fetch(signupUrl, {
-                    method: userRoute.signup.method,
-                    headers: {
+                    }),
+                    {
                         'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({
+                    }
+                );
+            } else {
+                await sendRequest(signupUrl,
+                    userRoute.signup.method,
+                    JSON.stringify({
                         name: formState.inputs.name.value,
                         email: formState.inputs.email.value,
                         password: formState.inputs.password.value
-                    })
-                });
-                console.log(response.status);
-                responseData = await response.json();
-                if (!response.ok) {
-                    throw new Error(responseData.message);
-                }
-
-                console.log(responseData);
-                setIsLoading(false);
-                auth.login();
+                    }),
+                    {
+                        'Content-Type': 'application/json'
+                    }
+                );
             }
+            auth.login();
         } catch (err) {
-            console.log(err);
-            setIsLoading(false);
-            setError(err.message || 'Something went wrong, please try again.');
+
         }
+
     };
 
     const swithModeHandler = () => {
@@ -129,13 +102,9 @@ const Auth = props => {
         setIsLoginMode(prevMode => !prevMode);
     }
 
-    const errorHandler = () => {
-        setError(null);
-    }
-
     return (
         <React.Fragment>
-            <ErrorModal error={error} onClear={errorHandler} />
+            <ErrorModal error={error} onClear={clearError} />
             <Card className="authentication">
                 {isLoading && <LoadingSpinner asOverlay />}
                 <h2> Login User</h2>

@@ -12,7 +12,7 @@ const userRoute = backend.userRoute;
 const Users = () => {
 
   const getUserUrl = backendServerUrl + userRoute.baseUrl + userRoute.getUser.path;
-  console.log(getUserUrl);
+  
 
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState();
@@ -30,8 +30,7 @@ const Users = () => {
         if (!response.ok) {
           throw new Error(responseData.message);
         }
-
-        console.log(responseData.users);
+        
         setLoadedUsers(responseData.users);
 
       } catch (err) {
