@@ -72,6 +72,10 @@ const Auth = props => {
                 });
                 console.log(response.status);
                 responseData = await response.json();
+                if (!response.ok) {
+                    throw new Error(responseData.message);
+                }
+
                 console.log(responseData);
                 setIsLoading(false);
                 auth.login();
@@ -108,49 +112,56 @@ const Auth = props => {
         setIsLoginMode(prevMode => !prevMode);
     }
 
+    const errorHandler = () => {
+        setError(null);
+    }
+
     return (
-        <Card className="authentication">
-            {isLoading && <LoadingSpinner asOverlay/>}
-            <h2> Login User</h2>
-            <hr />
-            <form onSubmit={authSubmitHandler}>
-                {!isLoginMode &&
+        <React.Fragment>
+            <ErrorModal error={error} onClear={errorHandler} />
+            <Card className="authentication">
+                {isLoading && <LoadingSpinner asOverlay />}
+                <h2> Login User</h2>
+                <hr />
+                <form onSubmit={authSubmitHandler}>
+                    {!isLoginMode &&
+                        <Input
+                            id="name"
+                            element="input"
+                            type="text"
+                            label="Your Name"
+                            validators={[VALIDATOR_REQUIRE()]}
+                            errorText="Please provide a valid uses name."
+                            onInput={inputHandler}
+                        />
+                    }
                     <Input
-                        id="name"
+                        id="email"
                         element="input"
-                        type="text"
-                        label="Your Name"
-                        validators={[VALIDATOR_REQUIRE()]}
-                        errorText="Please provide a valid uses name."
+                        type="email"
+                        label="E-Mail"
+                        validators={[VALIDATOR_EMAIL()]}
+                        errorText="Please provide a valid email address."
                         onInput={inputHandler}
                     />
-                }
-                <Input
-                    id="email"
-                    element="input"
-                    type="email"
-                    label="E-Mail"
-                    validators={[VALIDATOR_EMAIL()]}
-                    errorText="Please provide a valid email address."
-                    onInput={inputHandler}
-                />
-                <Input
-                    id="password"
-                    element="input"
-                    type="password"
-                    label="Password"
-                    validators={[VALIDATOR_MINLENGTH(5)]}
-                    errorText="Please provide a password, at least 5 characters."
-                    onInput={inputHandler}
-                />
-                <Button type="submit" disabled={!formState.isValid}>
-                    {isLoginMode ? 'LOGIN' : 'SIGNUP'}
+                    <Input
+                        id="password"
+                        element="input"
+                        type="password"
+                        label="Password"
+                        validators={[VALIDATOR_MINLENGTH(5)]}
+                        errorText="Please provide a password, at least 5 characters."
+                        onInput={inputHandler}
+                    />
+                    <Button type="submit" disabled={!formState.isValid}>
+                        {isLoginMode ? 'LOGIN' : 'SIGNUP'}
+                    </Button>
+                </form>
+                <Button inverse onClick={swithModeHandler}>
+                    SWITCH TO {isLoginMode ? 'SIGNUP' : 'LOGIN'}
                 </Button>
-            </form>
-            <Button inverse onClick={swithModeHandler}>
-                SWITCH TO {isLoginMode ? 'SIGNUP' : 'LOGIN'}
-            </Button>
-        </Card>
+            </Card>
+        </React.Fragment>
     );
 }
 

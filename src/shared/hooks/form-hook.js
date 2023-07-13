@@ -58,7 +58,6 @@ export const useForm = (initialInputs, initialFormValidity) => {
     }
         , []);
 
-    console.log('formState from form-hook');
-    console.log(formState);    
+    
     return [formState, inputHandler, setFormData];
 }
