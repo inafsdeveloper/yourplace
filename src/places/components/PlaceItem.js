@@ -1,14 +1,24 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useState, useHistory } from 'react';
 
 import Card from '../../shared/components/UIElements/Card';
 import Button from '../../shared/components/FormElements/Button';
 import Modal from '../../shared/components/UIElements/Modal';
 import Map from '../../shared/components/UIElements/Map';
 import { AuthContext } from '../../shared/context/auth-context';
+import config from "../../shared/config/config.json";
+import ErrorModal from "../../shared/components/UIElements/ErrorModal";
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
+import { useHttpClient } from "../../shared/hooks/http-hook";
 import './PlaceItem.css';
+
+const backend = config.backend;
+const backendServerUrl = backend.baseServerUrl + ":" + backend.port;
+const placeRoute = backend.placeRoute;
 
 const PlaceItem = props => {
   const auth = useContext(AuthContext);
+
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
   const [showMap, setShowMap] = useState(false);
 
@@ -22,14 +32,30 @@ const PlaceItem = props => {
 
   const cancelDeleteHandler = () => setShowConfirmModal(false);
 
-  const confirmDeleteHandler = () => {
+  const confirmDeleteHandler = async () => {
     setShowConfirmModal(false);
     console.log('DELETING...');
+    const deleteByPlaceIdUrl = backendServerUrl +
+      placeRoute.baseUrl +
+      placeRoute.deletePlace.path +
+      props.id;
+
+    try {
+      await sendRequest(deleteByPlaceIdUrl, placeRoute.deletePlace.method);
+      props.onDelete(props.id);
+    } catch (err) {
+      console.log(err);
+    }
     
   }
 
   return (
     <React.Fragment>
+      <ErrorModal error={error} onClear={clearError} />
+      {isLoading &&
+        <div className="center">
+          <LoadingSpinner asOverlay />
+        </div>}
       <Modal
         show={showMap}
         onCancel={closeMapHandler}
@@ -58,7 +84,8 @@ const PlaceItem = props => {
           Please note that it can't be undone thereafter.
         </p>
       </Modal>
-      <li className="place-item">
+      { !isLoading &&
+        <li className="place-item">
         <Card className="place-item__content">
           <div className="place-item__image">
             <img src={props.image} alt={props.title} />
@@ -74,7 +101,8 @@ const PlaceItem = props => {
             {auth.isLoggedIn && <Button danger onClick={showDeleteHandler}>DELETE</Button>}
           </div>
         </Card>
-      </li>
+      </li> 
+      }
     </React.Fragment>
   );
 };
