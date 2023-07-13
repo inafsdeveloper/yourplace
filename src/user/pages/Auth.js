@@ -11,6 +11,8 @@ import Input from "../../shared/components/FormElements/Input";
 import Button from "../../shared/components/FormElements/Button";
 import { AuthContext } from "../../shared/context/auth-context";
 import config from "../../shared/config/config.json";
+import ErrorModal from "../../shared/components/UIElements/ErrorModal";
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 
 import './Auth.css';
 
@@ -22,6 +24,10 @@ const Auth = props => {
     const auth = useContext(AuthContext);
 
     const [isLoginMode, setIsLoginMode] = useState(true);
+
+    const [isLoading, setIsLoading] = useState(false);
+
+    const [error, setError] = useState();
 
     const [formState, inputHandler, setFormData] = useForm({
         email: {
@@ -43,6 +49,9 @@ const Auth = props => {
         let response;
         let responseData;
         try {
+            setIsLoading(true);
+
+
             if (isLoginMode) {
                 console.log('Logging in..');
             } else {
@@ -64,12 +73,14 @@ const Auth = props => {
                 console.log(response.status);
                 responseData = await response.json();
                 console.log(responseData);
+                setIsLoading(false);
+                auth.login();
             }
         } catch (err) {
             console.log(err);
+            setIsLoading(false);
+            setError(err.message || 'Something went wrong, please try again.');
         }
-
-        auth.login();
     };
 
     const swithModeHandler = () => {
@@ -99,6 +110,7 @@ const Auth = props => {
 
     return (
         <Card className="authentication">
+            {isLoading && <LoadingSpinner asOverlay/>}
             <h2> Login User</h2>
             <hr />
             <form onSubmit={authSubmitHandler}>
