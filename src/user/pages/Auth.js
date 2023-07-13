@@ -10,7 +10,13 @@ import Card from "../../shared/components/UIElements/Card";
 import Input from "../../shared/components/FormElements/Input";
 import Button from "../../shared/components/FormElements/Button";
 import { AuthContext } from "../../shared/context/auth-context";
+import config from "../../shared/config/config.json";
+
 import './Auth.css';
+
+const backend = config.backend;
+const backendServerUrl = backend.baseServerUrl + ":" + backend.port;
+const userRoute = backend.userRoute;
 
 const Auth = props => {
     const auth = useContext(AuthContext);
@@ -28,20 +34,51 @@ const Auth = props => {
         }
     }, false);
 
-    const authSubmitHandler = event => {
+    const authSubmitHandler = async event => {
         event.preventDefault();
-        console.log("Authenticating");
-        console.log(formState.inputs);
+        // console.log("Authenticating");
+        // console.log(formState.inputs);
+        const signupUrl = backendServerUrl + userRoute.baseUrl + userRoute.signup.path;
+
+        let response;
+        let responseData;
+        try {
+            if (isLoginMode) {
+                console.log('Logging in..');
+            } else {
+                console.log('Siging Up..');
+                console.log(signupUrl);
+                console.log(userRoute.signup.method);
+                console.log(formState);
+                response = await fetch(signupUrl, {
+                    method: userRoute.signup.method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        name: formState.inputs.name.value,
+                        email: formState.inputs.email.value,
+                        password: formState.inputs.password.value
+                    })
+                });
+                console.log(response.status);
+                responseData = await response.json();
+                console.log(responseData);
+            }
+        } catch (err) {
+            console.log(err);
+        }
+
         auth.login();
     };
 
     const swithModeHandler = () => {
-        if(!isLoginMode) {
+        if (!isLoginMode) {
             setFormData(
                 {
                     ...formState.inputs,
                     name: undefined
-                }, 
+                },
                 formState.inputs.email.isValid & formState.inputs.password.isValid
             );
 
@@ -53,7 +90,7 @@ const Auth = props => {
                         value: '',
                         isValid: false
                     }
-                }, 
+                },
                 false
             );
         }
