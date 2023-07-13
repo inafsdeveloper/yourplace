@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useReducer, useState } from "react";
 
 import { useForm } from "../../shared/hooks/form-hook";
 import {
@@ -45,6 +45,7 @@ const Auth = props => {
         // console.log("Authenticating");
         // console.log(formState.inputs);
         const signupUrl = backendServerUrl + userRoute.baseUrl + userRoute.signup.path;
+        const loginUrl = backendServerUrl + userRoute.baseUrl + userRoute.login.path;
 
         let response;
         let responseData;
@@ -53,12 +54,28 @@ const Auth = props => {
 
 
             if (isLoginMode) {
-                console.log('Logging in..');
+                console.log('Logging in...');
+                response = await fetch(loginUrl, {
+                    method: userRoute.login.method,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        email: formState.inputs.email.value,
+                        password: formState.inputs.password.value
+                    })
+                });
+                console.log(response.status);
+                responseData = await response.json();
+                if (!response.ok) {
+                    throw new Error(responseData.message);
+                }
+
+                console.log(responseData);
+                setIsLoading(false);
+                auth.login();
             } else {
-                console.log('Siging Up..');
-                console.log(signupUrl);
-                console.log(userRoute.signup.method);
-                console.log(formState);
+                console.log('Siging Up...');
                 response = await fetch(signupUrl, {
                     method: userRoute.signup.method,
                     headers: {
