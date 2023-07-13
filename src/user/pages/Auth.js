@@ -44,10 +44,10 @@ const Auth = props => {
         
         const signupUrl = backendServerUrl + userRoute.baseUrl + userRoute.signup.path;
         const loginUrl = backendServerUrl + userRoute.baseUrl + userRoute.login.path;
-
+        let responseData;
         try {
             if (isLoginMode) {
-                await sendRequest(loginUrl,
+                responseData = await sendRequest(loginUrl,
                     userRoute.login.method,
                     JSON.stringify({
                         email: formState.inputs.email.value,
@@ -58,7 +58,7 @@ const Auth = props => {
                     }
                 );
             } else {
-                await sendRequest(signupUrl,
+                responseData = await sendRequest(signupUrl,
                     userRoute.signup.method,
                     JSON.stringify({
                         name: formState.inputs.name.value,
@@ -70,7 +70,7 @@ const Auth = props => {
                     }
                 );
             }
-            auth.login();
+            auth.login(responseData.user.id);
         } catch (err) {
 
         }

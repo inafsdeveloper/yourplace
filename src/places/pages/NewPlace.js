@@ -1,4 +1,5 @@
-import React, { useCallback, useReducer } from 'react';
+import React, { useCallback, useReducer, useContext } from 'react';
+import { useHistory } from 'react-router-dom';
 
 import Input from '../../shared/components/FormElements/Input';
 import Button from '../../shared/components/FormElements/Button';
@@ -8,11 +9,24 @@ import {
 } from '../../shared/util/validators';
 
 import { useForm } from '../../shared/hooks/form-hook';
+import { useHttpClient } from "../../shared/hooks/http-hook";
+import config from "../../shared/config/config.json";
+import { AuthContext } from '../../shared/context/auth-context';
+import ErrorModal from '../../shared/components/UIElements/ErrorModal';
+import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import './PlaceForm.css';
 
-
+const backend = config.backend;
+const backendServerUrl = backend.baseServerUrl + ":" + backend.port;
+const placeRoute = backend.placeRoute;
 
 const NewPlace = () => {
+
+  const auth = useContext(AuthContext);
+
+  const addNewPlaceUrl = backendServerUrl + placeRoute.baseUrl + placeRoute.createPlace.path;
+
+  const { isLoading, error, sendRequest, clearError } = useHttpClient();
 
   const [formState, inputHandler] = useForm({
     title: {
@@ -31,43 +45,72 @@ const NewPlace = () => {
     false
   );
 
-  const placeSubmitHandler = event => {
+  const history = useHistory();
+
+  const placeSubmitHandler = async event => {
     event.preventDefault();
-    console.log(formState.inputs); // send this to the backend;
+    // console.log(formState.inputs); // send this to the backend;
+    try {
+      await sendRequest(
+        addNewPlaceUrl,
+        placeRoute.createPlace.method,
+        JSON.stringify({
+          title: formState.inputs.title.value,
+          image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Eiffel_Tower_20051010.jpg/639px-Eiffel_Tower_20051010.jpg',
+          description: formState.inputs.description.value,
+          address: formState.inputs.address.value,
+          creator: auth.userid  // needs to fetch the user from current user
+        }),
+        {
+          'Content-Type': 'application/json'
+        }
+      );
+
+      history.push('/');
+    } catch (err) {
+      console.log(err);
+    }
   };
 
   return (
-    <form className="place-form" onSubmit={placeSubmitHandler}>
-      <Input
-        id="title"
-        element="input"
-        type="text"
-        label="Title"
-        validators={[VALIDATOR_REQUIRE()]}
-        errorText="Please enter a valid title."
-        onInput={inputHandler}
-      />
-      <Input
-        id="description"
-        element="textarea"
-        label="Description"
-        validators={[VALIDATOR_MINLENGTH(5)]}
-        errorText="Please enter a valid description (at least 5 characters)."
-        onInput={inputHandler}
-      />
-      <Input
-        id="address"
-        element="input"
-        type="text"
-        label="Address"
-        validators={[VALIDATOR_REQUIRE()]}
-        errorText="Please enter a valid address."
-        onInput={inputHandler}
-      />
-      <Button type="submit" disabled={!formState.isValid}>
-        ADD PLACE
-      </Button>
-    </form>
+    <React.Fragment>
+      <ErrorModal error={error} onClear={clearError} />
+      <form className="place-form" onSubmit={placeSubmitHandler}>
+        {isLoading &&
+          <div className="center">
+            <LoadingSpinner asOverlay />
+          </div>}
+        <Input
+          id="title"
+          element="input"
+          type="text"
+          label="Title"
+          validators={[VALIDATOR_REQUIRE()]}
+          errorText="Please enter a valid title."
+          onInput={inputHandler}
+        />
+        <Input
+          id="description"
+          element="textarea"
+          label="Description"
+          validators={[VALIDATOR_MINLENGTH(5)]}
+          errorText="Please enter a valid description (at least 5 characters)."
+          onInput={inputHandler}
+        />
+        <Input
+          id="address"
+          element="input"
+          type="text"
+          label="Address"
+          validators={[VALIDATOR_REQUIRE()]}
+          errorText="Please enter a valid address."
+          onInput={inputHandler}
+        />
+        <Button type="submit" disabled={!formState.isValid}>
+          ADD PLACE
+        </Button>
+      </form>
+    </React.Fragment>
   );
 };
 
