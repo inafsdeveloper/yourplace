@@ -22,11 +22,11 @@
         "placeRoute": {
             "baseUrl": "/api/places",
             "getPlaceById": {
-                "path" : "/:pid",
+                "path" : "/", 
                 "method": "GET"
             },
             "getPlaceByUserId": {
-                "path" : "/user/:uid",
+                "path" : "/user/", 
                 "method": "GET"
             },
             "createPlace": {
@@ -34,11 +34,11 @@
                 "method": "POST"
             },
             "updatePlace": {
-                "path" : "/:pid",
+                "path" : "/", 
                 "method": "PATCH"
             },
             "deletePlace": {
-                "path" : "/:pid",
+                "path" : "/", 
                 "method": "DELETE"
             }
         }
