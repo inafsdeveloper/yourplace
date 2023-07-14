@@ -44,7 +44,7 @@ const Auth = props => {
 
     const authSubmitHandler = async event => {
         event.preventDefault();
-        
+        console.log(formState.inputs);
         const signupUrl = backendServerUrl + userRoute.baseUrl + userRoute.signup.path;
         const loginUrl = backendServerUrl + userRoute.baseUrl + userRoute.login.path;
         let responseData;
@@ -85,7 +85,8 @@ const Auth = props => {
             setFormData(
                 {
                     ...formState.inputs,
-                    name: undefined
+                    name: undefined,
+                    image: undefined
                 },
                 formState.inputs.email.isValid & formState.inputs.password.isValid
             );
@@ -96,6 +97,10 @@ const Auth = props => {
                     ...formState.inputs,
                     name: {
                         value: '',
+                        isValid: false
+                    },
+                    image: {
+                        value: null,
                         isValid: false
                     }
                 },
@@ -124,7 +129,9 @@ const Auth = props => {
                             onInput={inputHandler}
                         />
                     }
-                    {!isLoginMode && <ImageUpload id="image" center/>}
+                    {!isLoginMode && (
+                        <ImageUpload id="image" center onInput={inputHandler} />)
+                    }
                     <Input
                         id="email"
                         element="input"
