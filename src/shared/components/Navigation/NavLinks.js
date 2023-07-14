@@ -1,11 +1,17 @@
 import React, { useContext } from 'react';
-import { NavLink } from 'react-router-dom';
+import { NavLink, useHistory } from 'react-router-dom';
 
 import { AuthContext } from '../../context/auth-context';
 import './NavLinks.css';
 
 const NavLinks = props => {
   const auth = useContext(AuthContext);
+
+  let history = useHistory();
+  const logoutHandler = () => {
+    auth.logout();
+    history.push("/auth");
+  }
   return <ul className="nav-links">
     <li>
       <NavLink to="/" exact>ALL USERS</NavLink>
@@ -21,7 +27,7 @@ const NavLinks = props => {
     </li>}
     {auth.isLoggedIn && (
       <li>
-        <button onClick={auth.logout}>LOGOUT</button>
+        <button onClick={logoutHandler} >LOGOUT</button>
       </li>
     )}
   </ul>

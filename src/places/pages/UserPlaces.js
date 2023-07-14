@@ -34,7 +34,7 @@ const UserPlaces = props => {
         
         fetchPlacesForUser();
     
-      }, [sendRequest]);
+      }, [USER_ID, sendRequest]);
 
     const placeDeletedHandler = deletedPlaceId => {
       setLoadedPlaces(prevPlaces => 
