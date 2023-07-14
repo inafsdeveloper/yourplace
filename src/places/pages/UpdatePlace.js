@@ -94,7 +94,7 @@ const UpdatePlace = () => {
         }
       );
       console.log(auth);
-        history.push('/' + auth.userid + "/places");
+      history.push('/' + auth.userid + "/places");
     } catch (err) {
       console.log(err);
     }
@@ -109,6 +109,10 @@ const UpdatePlace = () => {
         </Card>
       </div>
     );
+  }
+
+  const updateCancelHandler = () => {
+    history.push('/' + auth.userid + "/places");
   }
 
   return (
@@ -141,9 +145,14 @@ const UpdatePlace = () => {
             initialValue={loadedPlace.description}
             initialValid={true}
           />
-          <Button type="submit" disabled={!formState.isValid}>
-            UPDATE PLACE
-          </Button>
+          <div className="center">
+            <Button type="submit" disabled={!formState.isValid}>
+              UPDATE PLACE
+            </Button>
+            <Button type="button" onClick={updateCancelHandler}>
+              CANCEL
+            </Button>
+          </div>
         </form>
       }
     </React.Fragment>
