@@ -9,11 +9,14 @@ import {
 import Card from "../../shared/components/UIElements/Card";
 import Input from "../../shared/components/FormElements/Input";
 import Button from "../../shared/components/FormElements/Button";
+import ImageUpload from "../../shared/components/FormElements/ImageUpload";
+
 import { AuthContext } from "../../shared/context/auth-context";
 import config from "../../shared/config/config.json";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import { useHttpClient } from "../../shared/hooks/http-hook";
+
 
 import './Auth.css';
 
@@ -121,6 +124,7 @@ const Auth = props => {
                             onInput={inputHandler}
                         />
                     }
+                    {!isLoginMode && <ImageUpload id="image" center/>}
                     <Input
                         id="email"
                         element="input"
