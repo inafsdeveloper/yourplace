@@ -67,7 +67,10 @@ const NewPlace = () => {
       await sendRequest(
         addNewPlaceUrl,
         placeRoute.createPlace.method,
-        formData
+        formData,
+        {
+          Authorization: 'Bearer ' + auth.token
+        }
       );
 
       history.push(`/${auth.userid}/places`);

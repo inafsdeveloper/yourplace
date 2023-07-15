@@ -72,7 +72,7 @@ const Auth = props => {
                     formData
                 );
             }
-            auth.login(responseData.user.id);
+            auth.login(responseData.user.id, responseData.user.token);
         } catch (err) {
             console.log(err);
         }
