@@ -70,7 +70,7 @@ const NewPlace = () => {
         formData
       );
 
-      history.push('/');
+      history.push(`/${auth.userid}/places`);
     } catch (err) {
       console.log(err);
     }
