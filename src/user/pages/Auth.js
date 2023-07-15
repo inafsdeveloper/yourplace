@@ -42,6 +42,7 @@ const Auth = props => {
         }
     }, false);
 
+
     const authSubmitHandler = async event => {
         event.preventDefault();
         console.log(formState.inputs);
@@ -78,6 +79,7 @@ const Auth = props => {
 
     };
 
+
     const swithModeHandler = () => {
         if (!isLoginMode) {
             setFormData(
@@ -107,6 +109,8 @@ const Auth = props => {
         }
         setIsLoginMode(prevMode => !prevMode);
     }
+
+
 
     return (
         <React.Fragment>
