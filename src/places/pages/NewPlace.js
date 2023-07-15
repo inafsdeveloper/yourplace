@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 
 import Input from '../../shared/components/FormElements/Input';
 import Button from '../../shared/components/FormElements/Button';
+import ImageUpload from "../../shared/components/FormElements/ImageUpload";
 import {
   VALIDATOR_REQUIRE,
   VALIDATOR_MINLENGTH
@@ -40,6 +41,10 @@ const NewPlace = () => {
     address: {
       value: '',
       isValid: false
+    },
+    image: {
+      value: null,
+      isValid: false
     }
   },
     false
@@ -51,22 +56,24 @@ const NewPlace = () => {
     event.preventDefault();
     // console.log(formState.inputs); // send this to the backend;
     try {
+
+      const formData = new FormData();
+      formData.append('title', formState.inputs.title.value);
+      formData.append('image', formState.inputs.image.value);
+      formData.append('description', formState.inputs.description.value);
+      formData.append('address', formState.inputs.address.value);
+      formData.append('creator', auth.userid);
+
       await sendRequest(
         addNewPlaceUrl,
         placeRoute.createPlace.method,
-        JSON.stringify({
-          title: formState.inputs.title.value,
-          image: 'https://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Eiffel_Tower_20051010.jpg/639px-Eiffel_Tower_20051010.jpg',
-          description: formState.inputs.description.value,
-          address: formState.inputs.address.value,
-          creator: auth.userid  // needs to fetch the user from current user
-        }),
+        formData,
         {
-          'Content-Type': 'application/json'
+          Authorization: 'Bearer ' + auth.token
         }
       );
 
-      history.push('/');
+      history.push(`/${auth.userid}/places`);
     } catch (err) {
       console.log(err);
     }
@@ -105,6 +112,12 @@ const NewPlace = () => {
           validators={[VALIDATOR_REQUIRE()]}
           errorText="Please enter a valid address."
           onInput={inputHandler}
+        />
+        <ImageUpload
+          id="image"
+          center
+          onInput={inputHandler}
+          errorText="Please provide an image"
         />
         <Button type="submit" disabled={!formState.isValid}>
           ADD PLACE

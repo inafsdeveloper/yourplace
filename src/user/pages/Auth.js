@@ -9,11 +9,14 @@ import {
 import Card from "../../shared/components/UIElements/Card";
 import Input from "../../shared/components/FormElements/Input";
 import Button from "../../shared/components/FormElements/Button";
+import ImageUpload from "../../shared/components/FormElements/ImageUpload";
+
 import { AuthContext } from "../../shared/context/auth-context";
 import config from "../../shared/config/config.json";
 import ErrorModal from "../../shared/components/UIElements/ErrorModal";
 import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import { useHttpClient } from "../../shared/hooks/http-hook";
+
 
 import './Auth.css';
 
@@ -39,9 +42,10 @@ const Auth = props => {
         }
     }, false);
 
+
     const authSubmitHandler = async event => {
         event.preventDefault();
-        
+        console.log(formState.inputs);
         const signupUrl = backendServerUrl + userRoute.baseUrl + userRoute.signup.path;
         const loginUrl = backendServerUrl + userRoute.baseUrl + userRoute.login.path;
         let responseData;
@@ -58,31 +62,31 @@ const Auth = props => {
                     }
                 );
             } else {
+                const formData = new FormData();
+                formData.append('name', formState.inputs.name.value);
+                formData.append('image', formState.inputs.image.value);
+                formData.append('email', formState.inputs.email.value);
+                formData.append('password', formState.inputs.password.value);
                 responseData = await sendRequest(signupUrl,
                     userRoute.signup.method,
-                    JSON.stringify({
-                        name: formState.inputs.name.value,
-                        email: formState.inputs.email.value,
-                        password: formState.inputs.password.value
-                    }),
-                    {
-                        'Content-Type': 'application/json'
-                    }
+                    formData
                 );
             }
-            auth.login(responseData.user.id);
+            auth.login(responseData.user.id, responseData.user.token);
         } catch (err) {
-
+            console.log(err);
         }
 
     };
+
 
     const swithModeHandler = () => {
         if (!isLoginMode) {
             setFormData(
                 {
                     ...formState.inputs,
-                    name: undefined
+                    name: undefined,
+                    image: undefined
                 },
                 formState.inputs.email.isValid & formState.inputs.password.isValid
             );
@@ -94,6 +98,10 @@ const Auth = props => {
                     name: {
                         value: '',
                         isValid: false
+                    },
+                    image: {
+                        value: null,
+                        isValid: false
                     }
                 },
                 false
@@ -101,6 +109,8 @@ const Auth = props => {
         }
         setIsLoginMode(prevMode => !prevMode);
     }
+
+
 
     return (
         <React.Fragment>
@@ -120,6 +130,14 @@ const Auth = props => {
                             errorText="Please provide a valid uses name."
                             onInput={inputHandler}
                         />
+                    }
+                    {!isLoginMode && (
+                        <ImageUpload
+                        id="image"
+                        center
+                        onInput={inputHandler}
+                        errorText="Please provide an image"
+                      />)
                     }
                     <Input
                         id="email"
