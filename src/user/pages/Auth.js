@@ -61,21 +61,19 @@ const Auth = props => {
                     }
                 );
             } else {
+                const formData = new FormData();
+                formData.append('name', formState.inputs.name.value);
+                formData.append('image', formState.inputs.image.value);
+                formData.append('email', formState.inputs.email.value);
+                formData.append('password', formState.inputs.password.value);
                 responseData = await sendRequest(signupUrl,
                     userRoute.signup.method,
-                    JSON.stringify({
-                        name: formState.inputs.name.value,
-                        email: formState.inputs.email.value,
-                        password: formState.inputs.password.value
-                    }),
-                    {
-                        'Content-Type': 'application/json'
-                    }
+                    formData
                 );
             }
             auth.login(responseData.user.id);
         } catch (err) {
-
+            console.log(err);
         }
 
     };
