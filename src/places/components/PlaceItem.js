@@ -41,12 +41,19 @@ const PlaceItem = props => {
       props.id;
 
     try {
-      await sendRequest(deleteByPlaceIdUrl, placeRoute.deletePlace.method);
+      await sendRequest(
+        deleteByPlaceIdUrl,
+        placeRoute.deletePlace.method,
+        null,
+        {
+          Authorization: 'Bearer ' + auth.token
+        }
+      );
       props.onDelete(props.id);
     } catch (err) {
       console.log(err);
     }
-    
+
   }
 
   return (
@@ -84,24 +91,24 @@ const PlaceItem = props => {
           Please note that it can't be undone thereafter.
         </p>
       </Modal>
-      { !isLoading &&
+      {!isLoading &&
         <li className="place-item">
-        <Card className="place-item__content">
-          <div className="place-item__image">
-            <img src={`${backendServerUrl}/${props.image}`} alt={props.title} />
-          </div>
-          <div className="place-item__info">
-            <h2>{props.title}</h2>
-            <h3>{props.address}</h3>
-            <p>{props.description}</p>
-          </div>
-          <div className="place-item__actions">
-            <Button inverse onClick={openMapHandler}>VIEW ON MAP</Button>
-            {(auth.userid === props.creatorId) && <Button to={`/places/${props.id}`}>EDIT</Button>}
-            {(auth.userid === props.creatorId) && <Button danger onClick={showDeleteHandler}>DELETE</Button>}
-          </div>
-        </Card>
-      </li> 
+          <Card className="place-item__content">
+            <div className="place-item__image">
+              <img src={`${backendServerUrl}/${props.image}`} alt={props.title} />
+            </div>
+            <div className="place-item__info">
+              <h2>{props.title}</h2>
+              <h3>{props.address}</h3>
+              <p>{props.description}</p>
+            </div>
+            <div className="place-item__actions">
+              <Button inverse onClick={openMapHandler}>VIEW ON MAP</Button>
+              {(auth.userid === props.creatorId) && <Button to={`/places/${props.id}`}>EDIT</Button>}
+              {(auth.userid === props.creatorId) && <Button danger onClick={showDeleteHandler}>DELETE</Button>}
+            </div>
+          </Card>
+        </li>
       }
     </React.Fragment>
   );
