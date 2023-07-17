@@ -7,7 +7,7 @@ import config from "../../shared/config/config.json";
 import './UserItem.css';
 
 const backend = config.backend;
-const backendServerUrl = backend.baseServerUrl + ":" + backend.port;
+const backendServerUrl = process.env.REACT_APP_BACKEND_URL;
 
 const UserItem = props => {
     return (

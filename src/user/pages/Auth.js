@@ -1,4 +1,4 @@
-import React, { useContext, useReducer, useState } from "react";
+import React, { useContext, useState } from "react";
 
 import { useForm } from "../../shared/hooks/form-hook";
 import {
@@ -21,7 +21,7 @@ import { useHttpClient } from "../../shared/hooks/http-hook";
 import './Auth.css';
 
 const backend = config.backend;
-const backendServerUrl = backend.baseServerUrl + ":" + backend.port;
+const backendServerUrl = process.env.REACT_APP_BACKEND_URL;
 const userRoute = backend.userRoute;
 
 const Auth = props => {

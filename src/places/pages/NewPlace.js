@@ -1,4 +1,4 @@
-import React, { useCallback, useReducer, useContext } from 'react';
+import React, { useContext } from 'react';
 import { useHistory } from 'react-router-dom';
 
 import Input from '../../shared/components/FormElements/Input';
@@ -18,7 +18,7 @@ import LoadingSpinner from "../../shared/components/UIElements/LoadingSpinner";
 import './PlaceForm.css';
 
 const backend = config.backend;
-const backendServerUrl = backend.baseServerUrl + ":" + backend.port;
+const backendServerUrl = process.env.REACT_APP_BACKEND_URL;
 const placeRoute = backend.placeRoute;
 
 const NewPlace = () => {
