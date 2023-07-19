@@ -1,4 +1,4 @@
-import React, { useContext, useState, useHistory } from 'react';
+import React, { useContext, useState } from 'react';
 
 import Card from '../../shared/components/UIElements/Card';
 import Button from '../../shared/components/FormElements/Button';
@@ -12,7 +12,7 @@ import { useHttpClient } from "../../shared/hooks/http-hook";
 import './PlaceItem.css';
 
 const backend = config.backend;
-const backendServerUrl = backend.baseServerUrl + ":" + backend.port;
+const backendServerUrl = process.env.REACT_APP_BACKEND_URL;
 const placeRoute = backend.placeRoute;
 
 const PlaceItem = props => {

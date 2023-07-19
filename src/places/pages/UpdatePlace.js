@@ -17,7 +17,7 @@ import './PlaceForm.css';
 const DUMMY_PLACES = require('../../shared/data/places.json');
 
 const backend = config.backend;
-const backendServerUrl = backend.baseServerUrl + ":" + backend.port;
+const backendServerUrl = process.env.REACT_APP_BACKEND_URL;
 const placeRoute = backend.placeRoute;
 
 const UpdatePlace = () => {
